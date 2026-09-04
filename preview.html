@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ตัวอย่างสื่อ ครูพร้อมสอน</title>
+  <!-- v10.2: รองรับ ?id=รหัสสินค้า (ทุกหมวด: PDF/รูป/HTML/ลิงก์เว็บ) นอกเหนือจาก ?subject=…&level=… ของแผนการสอน -->
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -51,9 +52,18 @@
       <div id="htmlList" class="grid sm:grid-cols-2 gap-3"></div>
     </section>
 
-    <!-- PDF -->
+    <!-- ลิงก์ตัวอย่างภายนอก (เช่น YouTube / เว็บ) -->
+    <section id="extSection" class="hidden mb-6 text-center bg-white rounded-2xl shadow-sm p-8">
+      <div class="text-4xl mb-2">🔗</div>
+      <p class="text-slate-600 text-sm mb-4">ตัวอย่างของรายการนี้อยู่ที่ลิงก์ภายนอก</p>
+      <a id="extLink" href="#" target="_blank" rel="noopener" class="inline-block bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl px-6 py-2.5 text-sm">เปิดดูตัวอย่าง</a>
+    </section>
+    <!-- รายละเอียดสินค้า (จากชีต) -->
+    <section id="descSection" class="hidden mb-6 bg-white rounded-2xl shadow-sm p-5 text-sm text-slate-700 whitespace-pre-line"></section>
+
+    <!-- PDF / รูปภาพ -->
     <section id="pdfSection" class="hidden">
-      <h2 class="font-semibold text-sky-800 mb-3 flex items-center gap-2">📄 ตัวอย่างแผนการสอน (PDF)</h2>
+      <h2 id="pdfHead" class="font-semibold text-sky-800 mb-3 flex items-center gap-2">📄 ตัวอย่างแผนการสอน (PDF)</h2>
       <div id="pdfTabs" class="flex flex-wrap gap-2 mb-3"></div>
       <div id="pdfFrameWrap" class="bg-white rounded-2xl shadow-sm p-2 sm:p-3">
         <iframe id="pdfFrame" class="pdf-frame" allow="autoplay"></iframe>
@@ -87,6 +97,17 @@
 
       var hasHtml = DATA.htmls && DATA.htmls.length;
       var hasPdf  = DATA.pdfs && DATA.pdfs.length;
+      var hasExt  = !!DATA.external;
+
+      // v10: ปุ่มสั่งซื้อจากข้อมูลสินค้า (ทุกหมวด) — ลิงก์ ?id= ใส่ตะกร้าทันที
+      if (DATA.buy && DATA.buy.id) {
+        $('buyLink').href = './?id=' + encodeURIComponent(DATA.buy.id);
+        $('buyLabel').textContent = 'สั่งซื้อ ' + (DATA.buy.name || '') + (DATA.buy.price ? ' — ' + Number(DATA.buy.price).toLocaleString('th-TH') + ' บาท' + (DATA.buy.unit === 'ปี' ? '/ปี' : '') : '');
+        $('buyBar').classList.remove('hidden');
+        if (DATA.buy.category && DATA.buy.category !== 'แผนการสอน') $('pdfHead').textContent = '📄 ตัวอย่างไฟล์';
+      }
+      if (DATA.desc) { $('descSection').textContent = DATA.desc; $('descSection').classList.remove('hidden'); }
+      if (hasExt) { $('extLink').href = DATA.external; $('extSection').classList.remove('hidden'); }
 
       // สื่อ HTML — เปิดเป็นแท็บใหม่ด้วยเนื้อหาที่อ่านในฐานะเจ้าของ (เสถียรทุกบัญชี/เบราว์เซอร์)
       if (hasHtml) {
@@ -138,7 +159,7 @@
         }
       }
 
-      if (!hasHtml && !hasPdf) {
+      if (!hasHtml && !hasPdf && !hasExt) {
         $('empty').classList.remove('hidden');
         if (DATA.error) $('emptyMsg').textContent = DATA.error;
       }
@@ -186,6 +207,15 @@
     // โหลดข้อมูลผ่าน API ของระบบขาย
     (function(){
       var p = new URLSearchParams(location.search);
+      var pid = (p.get('id')||'').trim();
+      if (pid) {   // v10: ตัวอย่างตาม ID (ทุกหมวด)
+        $('title').textContent = pid;
+        fetch(WEB_APP_URL, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify({ fn:'getPreviewById', args:[pid] }), redirect:'follow' })
+          .then(function(r){ return r.text(); })
+          .then(function(t){ var d; try { d = JSON.parse(t); } catch(e){ return showError('เซิร์ฟเวอร์ตอบกลับไม่ใช่ JSON (ตรวจว่า Deploy เวอร์ชันใหม่แล้ว)'); } render(d); })
+          .catch(function(err){ showError('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + (err && err.message || err)); });
+        return;
+      }
       var args = [p.get('subject')||'', p.get('level')||'', p.get('cur')||'', p.get('hours')||'', p.get('term')||''];
       // โชว์ชื่อวิชาคร่าวๆ ระหว่างรอ
       if (args[0]) { $('title').textContent = args[0] + (args[4]?' ภาคเรียนที่ '+args[4]:''); $('subtitle').textContent = (args[1]||'') + (args[2]?' · หลักสูตร '+args[2]:'') + (args[4]?' · ภาคเรียนที่ '+args[4]:'') + (args[3]?' · '+args[3]+' ชม.':''); }

@@ -1573,6 +1573,8 @@ async function loadEdgeStatus(){
         msg = '✅ หน้าร้านตรงกับข้อมูลล่าสุดแล้ว • เผยแพร่ ' + agoTxt + (r.lastCount ? ' (' + r.lastCount + ' รายการ)' : '');
       }
     }
+    // v11.7: บอกว่าเว็บนี้อ่าน/เขียนชีตไฟล์ไหน
+    if (r.sheetName) msg += ' • 📄 ข้อมูลจากชีต: <a href="'+esc(r.sheetUrl||'#')+'" target="_blank" rel="noopener" class="underline font-bold">'+esc(r.sheetName)+'</a>';
     bar.className = 'mt-3 flex flex-col sm:flex-row sm:items-center gap-2 rounded-xl border px-3 py-2.5 text-xs font-semibold ' + cls;
     bar.innerHTML = '<span class="flex-1">' + msg + '</span>' +
       (r.configured && adminRole === 'owner'

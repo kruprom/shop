@@ -4,6 +4,7 @@
 <!-- ════════════════════════════════════════════════════════════
      🛒 ครูพร้อมสอน — หน้าร้าน + แอดมิน v11.0 (5 ก.ย. 2569)
      v11: ปุ่มหมวดบนแถบเมนู (จากชีต 📂) · 🔍 ไอคอนค้นหาข้าง Admin · ตรวจสถานะมุมขวาบน · หน้าแรก = เลือกชั้นแผน + ขายดี + มาใหม่ · 🧩 อื่นๆ อัตโนมัติ · ไม่มี VIP
+     v11.6: ปุ่ม 👀 ดูตัวอย่างทั้งหมวด (จาก categories[].example ใน products.json)
      แอดมิน: แท็บ 📂 หมวดสินค้า (เพิ่ม/แก้/ซ่อน/เรียง/ลบ) · 📚 สินค้าทุกหมวด (ช่องเปลี่ยนตามหมวด, สวิตช์เปิดขาย)
              ⚙️ ปุ่มเมนูหน้าร้าน · บันทึกแล้วขึ้นหน้าร้านเอง · พนักงานเปิด/ปิดขายได้
      หน้าแรก = การ์ดหมวดจากชีต 📂 · ค้นหาทุกหมวด · ชิปกรองตามหมวด · ปุ่มเมนูจากชีต 🔘
@@ -697,7 +698,7 @@ function ensureCategories(){
   CATEGORIES = ORDER.filter(function(c){ return present.indexOf(c) >= 0 || c === CAT_LESSON || c === CAT_OTHER; })
     .concat(present.filter(function(c){ return ORDER.indexOf(c) < 0 && c !== 'กลุ่ม VIP'; }).sort(function(a,b){ return a.localeCompare(b,'th'); }))
     .map(function(k, i){ return { key:k, icon: DEFAULT_CAT_ICONS[k] || '🏷️', desc:'', order:i+1,
-      filters: k === CAT_LESSON ? ['grade','curriculum','group'] : ['grade','subj','sub'], discount: k === CAT_LESSON, system:false, other: k === CAT_OTHER }; });
+      filters: k === CAT_LESSON ? ['grade','curriculum','group'] : ['grade','subj','sub'], discount: k === CAT_LESSON, system:false, other: k === CAT_OTHER, example:'' }; });
 }
 // หมวดที่มีปุ่มบนแถบเมนู (ยกเว้น อื่นๆ ซึ่งเป็นถังรวม)
 function visibleCatKeys(){ return CATEGORIES.filter(function(c){ return !c.other; }).map(function(c){ return c.key; }); }
@@ -1092,7 +1093,8 @@ function renderSubjects(){
   home.classList.add('hidden'); grid.classList.remove('hidden');
   const cat = catOf(VIEW.cat) || { key:VIEW.cat, icon:'🏷️', desc:'', filters:[] };
   head.innerHTML = '<div class="flex items-center gap-2"><button onclick="goHome()" class="w-9 h-9 rounded-full bg-white border border-sky-200 text-sky-700 font-bold text-lg" aria-label="กลับหน้าแรก">‹</button>' +
-    '<div><div class="font-extrabold text-sky-800">'+cat.icon+' '+esc(cat.key)+'</div>'+(cat.desc ? '<div class="text-[11px] text-gray-500">'+esc(cat.desc)+'</div>' : '')+'</div></div>';
+    '<div class="flex-1 min-w-0"><div class="font-extrabold text-sky-800">'+cat.icon+' '+esc(cat.key)+'</div>'+(cat.desc ? '<div class="text-[11px] text-gray-500">'+esc(cat.desc)+'</div>' : '')+'</div>' +
+    (cat.example ? '<a href="'+esc(cat.example)+'" target="_blank" rel="noopener" class="flex-shrink-0 text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-xl px-3 py-2 shadow whitespace-nowrap">👀 ดูตัวอย่าง'+esc(cat.key)+'</a>' : '') + '</div>';
   const isLesson = cat.key === CAT_LESSON;
   if (isLesson){
     if (!curGrade){

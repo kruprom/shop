@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ตัวอย่างสื่อ ครูพร้อมสอน</title>
-  <!-- v10.2: รองรับ ?id=รหัสสินค้า (ทุกหมวด: PDF/รูป/HTML/ลิงก์เว็บ) นอกเหนือจาก ?subject=…&level=… ของแผนการสอน -->
+  <!-- v10.2: รองรับ ?id=รหัสสินค้า (ทุกหมวด) · v11.6: ?cat=ชื่อหมวด = ตัวอย่างรวมทั้งหมวด (แท็บตามโฟลเดอร์ย่อย) -->
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -58,6 +58,8 @@
       <p class="text-slate-600 text-sm mb-4">ตัวอย่างของรายการนี้อยู่ที่ลิงก์ภายนอก</p>
       <a id="extLink" href="#" target="_blank" rel="noopener" class="inline-block bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl px-6 py-2.5 text-sm">เปิดดูตัวอย่าง</a>
     </section>
+    <!-- แท็บกลุ่มตัวอย่าง (v11.6 — ?cat=) -->
+    <div id="groupTabs" class="hidden flex flex-wrap gap-2 mb-4"></div>
     <!-- รายละเอียดสินค้า (จากชีต) -->
     <section id="descSection" class="hidden mb-6 bg-white rounded-2xl shadow-sm p-5 text-sm text-slate-700 whitespace-pre-line"></section>
 
@@ -89,8 +91,29 @@
     function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
     function $(id){ return document.getElementById(id); }
 
-    function render(DATA){
+    var GROUPS = null, FULL = null;
+    function renderGroups(DATA){
+      GROUPS = DATA.groups || []; FULL = DATA;
+      var tabs = $('groupTabs');
+      if (GROUPS.length < 2) { tabs.classList.add('hidden'); return; }
+      tabs.classList.remove('hidden');
+      tabs.innerHTML = GROUPS.map(function(g, i){ return '<button data-g="'+i+'" onclick="showGroup('+i+')">'+esc(g.name||'ทั้งหมด')+'</button>'; }).join('');
+    }
+    window.showGroup = function(i){
+      var g = GROUPS[i]; if (!g) return;
+      Array.prototype.forEach.call(document.querySelectorAll('[data-g]'), function(b){
+        b.className = 'text-sm font-semibold rounded-full px-4 py-1.5 transition ' + ((+b.dataset.g === i) ? 'bg-sky-600 text-white' : 'bg-white text-sky-700 border border-sky-200 hover:bg-sky-50');
+      });
+      var d = {}; for (var k in FULL) d[k] = FULL[k];
+      d.pdfs = g.pdfs; d.htmls = g.htmls; d.groups = [];
+      // ล้างส่วนที่เรนเดอร์แล้ว แล้ววาดใหม่ด้วยกลุ่มที่เลือก
+      $('htmlSection').classList.add('hidden'); $('pdfSection').classList.add('hidden'); $('empty').classList.add('hidden');
+      $('htmlList').innerHTML = ''; $('pdfTabs').innerHTML = ''; $('pdfMobileList').innerHTML = '';
+      render(d, true);
+    };
+    function render(DATA, keepHeader){
       $('loading').classList.add('hidden');
+      if (!keepHeader && DATA.groups && DATA.groups.length > 1) { renderGroups(DATA); window.showGroup(0); return; }
       $('title').textContent = DATA.title || 'ตัวอย่างสื่อ';
       $('subtitle').textContent = DATA.subtitle || '';
       document.title = 'ตัวอย่างสื่อ ' + (DATA.title || '');
@@ -99,6 +122,13 @@
       var hasPdf  = DATA.pdfs && DATA.pdfs.length;
       var hasExt  = !!DATA.external;
 
+      // v11.6: ตัวอย่างระดับหมวด → ปุ่มกลับไปเลือกซื้อในหมวดนั้น
+      if (DATA.buy && DATA.buy.cat && !DATA.buy.id) {
+        $('buyLink').href = './?cat=' + encodeURIComponent(DATA.buy.cat);
+        $('buyLabel').textContent = '🛒 เลือกซื้อ' + DATA.buy.cat;
+        $('buyBar').classList.remove('hidden');
+        $('pdfHead').textContent = '📄 ตัวอย่าง' + DATA.buy.cat;
+      }
       // v10: ปุ่มสั่งซื้อจากข้อมูลสินค้า (ทุกหมวด) — ลิงก์ ?id= ใส่ตะกร้าทันที
       if (DATA.buy && DATA.buy.id) {
         $('buyLink').href = './?id=' + encodeURIComponent(DATA.buy.id);
@@ -207,6 +237,15 @@
     // โหลดข้อมูลผ่าน API ของระบบขาย
     (function(){
       var p = new URLSearchParams(location.search);
+      var pcat = (p.get('cat')||'').trim();
+      if (pcat) {   // v11.6: ตัวอย่างรวมทั้งหมวด
+        $('title').textContent = 'ตัวอย่าง' + pcat;
+        fetch(WEB_APP_URL, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify({ fn:'getPreviewByCategory', args:[pcat] }), redirect:'follow' })
+          .then(function(r){ return r.text(); })
+          .then(function(t){ var d; try { d = JSON.parse(t); } catch(e){ return showError('เซิร์ฟเวอร์ตอบกลับไม่ใช่ JSON (ตรวจว่า Deploy เวอร์ชันใหม่แล้ว)'); } render(d); })
+          .catch(function(err){ showError('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + (err && err.message || err)); });
+        return;
+      }
       var pid = (p.get('id')||'').trim();
       if (pid) {   // v10: ตัวอย่างตาม ID (ทุกหมวด)
         $('title').textContent = pid;

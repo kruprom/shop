@@ -2,7 +2,8 @@
 <html lang="th">
 <head>
 <!-- ════════════════════════════════════════════════════════════
-     🛒 ครูพร้อมสอน — หน้าร้าน + แอดมิน v10.1 (3 ก.ย. 2569)
+     🛒 ครูพร้อมสอน — หน้าร้าน + แอดมิน v11.0 (5 ก.ย. 2569)
+     v11: ปุ่มหมวดบนแถบเมนู (จากชีต 📂) · 🔍 ไอคอนค้นหาข้าง Admin · ตรวจสถานะมุมขวาบน · หน้าแรก = เลือกชั้นแผน + ขายดี + มาใหม่ · 🧩 อื่นๆ อัตโนมัติ · ไม่มี VIP
      แอดมิน: แท็บ 📂 หมวดสินค้า (เพิ่ม/แก้/ซ่อน/เรียง/ลบ) · 📚 สินค้าทุกหมวด (ช่องเปลี่ยนตามหมวด, สวิตช์เปิดขาย)
              ⚙️ ปุ่มเมนูหน้าร้าน · บันทึกแล้วขึ้นหน้าร้านเอง · พนักงานเปิด/ปิดขายได้
      หน้าแรก = การ์ดหมวดจากชีต 📂 · ค้นหาทุกหมวด · ชิปกรองตามหมวด · ปุ่มเมนูจากชีต 🔘
@@ -55,28 +56,32 @@
 <div class="max-w-5xl mx-auto px-3 sm:px-5 pb-24 sm:pb-10">
 
   <!-- ░░ Header ░░ -->
-  <header class="brand-grad text-white rounded-b-3xl shadow-lg px-5 pt-7 pb-5 text-center">
+  <header class="brand-grad text-white rounded-b-3xl shadow-lg px-5 pt-7 pb-5 text-center relative">
+    <!-- 🔍 v11 ตรวจสถานะออเดอร์ — มุมขวาบน -->
+    <button id="statusBtn" onclick="switchTab('status')" class="no-print absolute top-3 right-3 text-[11px] sm:text-xs font-bold bg-white/15 hover:bg-white/25 border border-white/40 rounded-full px-3 py-1.5">🔍 ตรวจสถานะ</button>
     <!-- โลโก้ร้านจากแท็บตั้งค่า (อัปโหลดได้เอง) — ยังไม่อัปโหลดจะแสดง 🛒 ไปก่อน -->
     <img id="hdrLogo" class="hidden w-16 h-16 object-contain rounded-2xl bg-white/90 p-1 mx-auto shadow" alt="โลโก้ร้าน">
     <div id="hdrLogoFallback" class="text-3xl">🛒</div>
     <h1 class="text-xl sm:text-2xl font-extrabold mt-1"><span id="hdrPageName">ครูพร้อมสอน</span></h1>
     <p id="hdrSlogan" class="text-xs sm:text-sm opacity-90 mt-1">แผน · สื่อ · ข้อสอบ · เอกสารครู พร้อมใช้ ส่งไวทาง Gmail</p>
-    <!-- 🔎 v10 ค้นหาครั้งเดียว เจอทุกหมวด -->
-    <div id="searchWrap" class="no-print relative mt-4 max-w-md mx-auto text-left">
-      <span class="absolute left-3.5 top-3 text-base">🔎</span>
-      <input id="globalSearch" type="search" oninput="onGlobalSearch()" placeholder="ค้นหาทุกหมวด เช่น ป.3, PA, เศษส่วน…" autocomplete="off"
-        class="w-full h-11 rounded-xl pl-10 pr-10 text-sm text-gray-800 bg-white shadow focus:outline-none focus:ring-2 focus:ring-amber-300">
-      <button id="searchClear" onclick="clearGlobalSearch()" class="hidden absolute right-2 top-2 w-7 h-7 rounded-full bg-sky-100 text-sky-700 text-sm font-bold" aria-label="ล้างคำค้น">✕</button>
-    </div>
   </header>
 
-  <!-- ░░ Tabs: หมวดสินค้าอยู่บนสุด (สร้างจากข้อมูลจริง — แอดมินเพิ่มประเภทใหม่ในชีต แท็บโผล่เอง) ░░ -->
-  <!-- ░░ แถบบน: หน้าแรก + ปุ่มเมนูจากชีต 🔘 เมนู (เพิ่ม/ซ่อน/เรียงได้เอง) + Admin ░░ -->
-  <nav class="no-print mt-4 flex gap-2 overflow-x-auto pb-1">
-    <button id="homeTab" class="tab-btn active text-xs sm:text-sm font-bold bg-white border border-sky-100 rounded-xl px-3 py-2 shadow-sm" data-tab="shop" onclick="goHome()">🏠 หน้าแรก</button>
-    <span id="menuBtns" class="flex gap-2"></span>
-    <button id="adminBtn" onclick="toggleAdminMenu()" class="tab-btn text-xs sm:text-sm font-bold bg-white border border-sky-100 rounded-xl px-3 py-2 shadow-sm ml-auto">🔐 Admin</button>
+  <!-- ░░ v11 แถบเมนู: หน้าแรก + ปุ่มหมวดจากชีต 📂 (ซ่อนหมวด = หาย) + อื่นๆ … ขวา: 🔍 ค้นหา + Admin ░░ -->
+  <nav class="no-print mt-4 flex items-center gap-2">
+    <div id="catNav" class="flex gap-2 overflow-x-auto pb-1 flex-1 min-w-0">
+      <button id="homeTab" class="tab-btn active text-xs sm:text-sm font-bold bg-white border border-sky-100 rounded-xl px-3 py-2 shadow-sm whitespace-nowrap" data-tab="shop" onclick="goHome()">🏠 หน้าแรก</button>
+      <span id="catTabs" class="flex gap-2"></span>
+    </div>
+    <button id="searchBtn" onclick="toggleSearch()" class="tab-btn text-base font-bold bg-white border border-sky-100 rounded-xl w-10 h-10 shadow-sm flex-shrink-0" aria-label="ค้นหา" title="ค้นหาทุกหมวด">🔍</button>
+    <button id="adminBtn" onclick="toggleAdminMenu()" class="tab-btn text-xs sm:text-sm font-bold bg-white border border-sky-100 rounded-xl px-3 py-2 shadow-sm flex-shrink-0 whitespace-nowrap">🔐 Admin</button>
   </nav>
+  <!-- ช่องค้นหา: ซ่อนไว้ เปิดด้วยปุ่ม 🔍 -->
+  <div id="searchWrap" class="no-print hidden relative mt-2">
+    <span class="absolute left-3.5 top-3 text-base">🔎</span>
+    <input id="globalSearch" type="search" oninput="onGlobalSearch()" placeholder="ค้นหาทุกหมวด เช่น ป.3, PA, เศษส่วน…" autocomplete="off"
+      class="w-full h-11 rounded-xl pl-10 pr-10 text-sm text-gray-800 bg-white border-2 border-sky-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-300">
+    <button id="searchClear" onclick="clearGlobalSearch()" class="hidden absolute right-2 top-2 w-7 h-7 rounded-full bg-sky-100 text-sky-700 text-sm font-bold" aria-label="ล้างคำค้น">✕</button>
+  </div>
 
   <!-- ░░ เมนูย่อย Admin (แสดงหลังใส่ PIN) ░░ -->
   <div id="adminMenu" class="hidden no-print mt-2 bg-white border border-sky-200 rounded-2xl shadow-lg p-3">
@@ -309,7 +314,6 @@
           <label class="text-xs font-bold text-gray-700">🖋️ ข้อความหน้าร้าน (เว้นว่าง = ใช้ข้อความมาตรฐาน) — บันทึกแล้วขึ้นเว็บเองผ่าน Edge ไม่ต้องอัปไฟล์</label>
           <div class="grid gap-2 mt-2">
             <div><label class="text-[11px] font-bold text-gray-600">ข้อความส่วนลด (ใต้ "เลือกวิชาที่ต้องการ")</label><textarea id="stTxtDiscount" rows="2" class="w-full border rounded-lg px-2 py-1.5 text-xs mt-1"></textarea></div>
-            <div class="hidden"><textarea id="stTxtVip"></textarea></div>
             <div><label class="text-[11px] font-bold text-gray-600">คำเตือน Gmail บรรทัดที่ 1</label><textarea id="stTxtGmail1" rows="2" class="w-full border rounded-lg px-2 py-1.5 text-xs mt-1"></textarea></div>
             <div><label class="text-[11px] font-bold text-gray-600">คำเตือน Gmail บรรทัดที่ 2 (ค่าบริการส่งใหม่)</label><textarea id="stTxtGmail2" rows="2" class="w-full border rounded-lg px-2 py-1.5 text-xs mt-1"></textarea></div>
             <div><label class="text-[11px] font-bold text-gray-600">ข้อความท้ายเว็บ (Copyright)</label><input id="stTxtFooter" class="w-full border rounded-lg px-2 py-1.5 text-xs mt-1"></div>
@@ -366,7 +370,8 @@
   </section>
 
   <!-- ░░ Footer ░░ -->
-  <footer id="siteFooter" class="text-center text-[11px] text-gray-400 mt-8">
+  <div id="menuBtns" class="no-print flex flex-wrap justify-center gap-2 mt-8"></div>
+  <footer id="siteFooter" class="text-center text-[11px] text-gray-400 mt-3">
     Copyright © เพจครูพร้อมสอน.
   </footer>
 </div>
@@ -639,7 +644,7 @@ async function switchTab(name){
   document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.tab === name); });
   // แท็บหมวดสินค้า: ตอนอยู่หน้าร้าน ให้สว่างเฉพาะหมวดที่เลือกอยู่ (ไม่ใช่ทุกแท็บที่ data-tab=shop)
   try { renderChips(); } catch(e){}
-  document.getElementById('searchWrap').classList.toggle('hidden', name !== 'shop');
+  if (name !== 'shop') document.getElementById('searchWrap').classList.add('hidden');
   document.getElementById('adminBtn').classList.toggle('active', ADMIN_TABS.indexOf(name) >= 0);
   document.getElementById('adminMenu').classList.add('hidden');
   try { updateCartBar(); } catch(e){}
@@ -659,7 +664,9 @@ const DEFAULT_QR = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAImCAMAAA
 let SETTINGS = {};
 let PRODUCTS = [];
 let CATEGORIES = [];            // v10: จากชีต 📂 หมวดสินค้า (ผ่าน products.json v2) — หมวด/ไอคอน/ตัวกรอง/ร่วมส่วนลด
-let MENU = [];                  // v10: ปุ่มบนหน้าร้าน จากชีต 🔘 เมนู
+let MENU = [];                  // ปุ่มลิงก์เสริม จากชีต 🔘 เมนู (แสดงท้ายหน้า)
+let BEST = [];                  // v11: ID ขายดี จาก products.json
+const CAT_OTHER = 'อื่นๆ';
 let cart = [];
 let VIEW = { page: 'home', cat: '', f: {} };   // หน้าแรก (การ์ดหมวด) → ในหมวด (ชิปกรอง) / ค้นหาทุกหมวด
 let curCat = 'แผนการสอน';       // คงชื่อเดิมไว้ให้โค้ดส่วนอื่นอ้างถึงได้
@@ -669,9 +676,9 @@ let curGroup = 'ทั้งหมด';
 let GROUP_ORDER_MAP = null;     // ลำดับกลุ่มมาตรฐานต่อหลักสูตร — รับจาก snapshot/GAS
 let ONE_CURRI = false;
 const CAT_LESSON = 'แผนการสอน';
-const DEFAULT_CAT_ICONS = { 'แผนการสอน':'📚', 'สื่อการสอน':'🎬', 'ข้อสอบ':'📝', 'บันทึกหลังสอน':'📋', 'รายงาน PA':'🏅',
-  'วิจัยในชั้นเรียน':'🔬', 'หลักสูตรสถานศึกษา':'📖', 'งานธุรการครู':'🗂️', 'ชุดรวม':'🎁', 'ระบบงานโรงเรียน':'🏫', 'ระบบงาน':'💼', 'กลุ่ม VIP':'👑' };
-const FILTER_LABEL = { grade:'ชั้น', curriculum:'หลักสูตร', group:'กลุ่มวิชา', subj:'วิชา', term:'ภาคเรียน', sub:'ประเภท' };
+const DEFAULT_CAT_ICONS = { 'แผนการสอน':'📚', 'หลักสูตร':'📖', 'ข้อสอบ':'📝', 'บันทึกหลังสอน':'📋', 'สื่อ & เกม':'🎬', 'PA':'🏅',
+  'วิจัย':'🔬', 'ระบบงาน':'💼', 'ธุรการครู':'🗂️', 'อื่นๆ':'🧩', 'สื่อการสอน':'🎬', 'รายงาน PA':'🏅', 'วิจัยในชั้นเรียน':'🔬', 'หลักสูตรสถานศึกษา':'📖', 'งานธุรการครู':'🗂️', 'ระบบงานโรงเรียน':'🏫' };
+const FILTER_LABEL = { grade:'ชั้น', curriculum:'หลักสูตร', group:'กลุ่มวิชา', subj:'วิชา', term:'ภาคเรียน', sub:'ประเภท', category:'หมวด' };
 let lastOrder = null;
 
 function catOf(key){ return CATEGORIES.filter(function(c){ return c.key === key; })[0] || null; }
@@ -686,11 +693,19 @@ function isNewProduct(p){
 function ensureCategories(){
   if (CATEGORIES.length) return;
   const present = Array.from(new Set(PRODUCTS.map(function(p){ return p.category || CAT_LESSON; })));
-  const ORDER = ['แผนการสอน','สื่อการสอน','ข้อสอบ','บันทึกหลังสอน','รายงาน PA','วิจัยในชั้นเรียน','หลักสูตรสถานศึกษา','งานธุรการครู','ชุดรวม','ระบบงานโรงเรียน','ระบบงาน'];
-  CATEGORIES = ORDER.filter(function(c){ return present.indexOf(c) >= 0; })
+  const ORDER = ['แผนการสอน','หลักสูตร','ข้อสอบ','บันทึกหลังสอน','สื่อ & เกม','PA','วิจัย','ระบบงาน','ธุรการครู','อื่นๆ'];
+  CATEGORIES = ORDER.filter(function(c){ return present.indexOf(c) >= 0 || c === CAT_LESSON || c === CAT_OTHER; })
     .concat(present.filter(function(c){ return ORDER.indexOf(c) < 0 && c !== 'กลุ่ม VIP'; }).sort(function(a,b){ return a.localeCompare(b,'th'); }))
     .map(function(k, i){ return { key:k, icon: DEFAULT_CAT_ICONS[k] || '🏷️', desc:'', order:i+1,
-      filters: k === CAT_LESSON ? ['grade','curriculum','group'] : ['grade','subj','sub'], discount: k === CAT_LESSON, system: k === 'ระบบงานโรงเรียน' }; });
+      filters: k === CAT_LESSON ? ['grade','curriculum','group'] : ['grade','subj','sub'], discount: k === CAT_LESSON, system:false, other: k === CAT_OTHER }; });
+}
+// หมวดที่มีปุ่มบนแถบเมนู (ยกเว้น อื่นๆ ซึ่งเป็นถังรวม)
+function visibleCatKeys(){ return CATEGORIES.filter(function(c){ return !c.other; }).map(function(c){ return c.key; }); }
+// สินค้าที่หมวดไม่ตรงกับปุ่มใดเลย → เข้า 🧩 อื่นๆ
+function isOtherProduct(p){ return visibleCatKeys().indexOf(p.category || CAT_LESSON) < 0; }
+function productsOfCat(key){
+  const other = catOf(key) && catOf(key).other;
+  return PRODUCTS.filter(function(p){ return other ? isOtherProduct(p) : (p.category||CAT_LESSON) === key; });
 }
 
 /* 💾 จำข้อมูลฝั่งลูกค้าไว้ในเครื่อง — กันตะกร้า/ออเดอร์หายเวลาสลับไปแอปธนาคารแล้วหน้ารีโหลด */
@@ -727,7 +742,8 @@ document.getElementById('buyerEmail').addEventListener('input', saveBuyerLocal);
 
 /* ⚡ Sheets + Edge: โหลด products.json จาก GitHub Pages CDN ก่อน (เร็ว ไม่พึ่ง GAS) — ไม่มีค่อยถอยไป GAS */
 let SHOP_BOOTED = false;
-function applyShopData(settings, products, categories, menu){
+function applyShopData(settings, products, categories, menu, best){
+  if (Array.isArray(best)) BEST = best;
   if (settings){
     SETTINGS = settings;
     document.getElementById('hdrPageName').textContent = SETTINGS.pageName || 'ครูพร้อมสอน';
@@ -776,7 +792,7 @@ async function initShop(){
   } catch(e){}
   if (edge && edge.products && edge.products.length){
     if (edge.groupOrder) GROUP_ORDER_MAP = edge.groupOrder;
-    applyShopData(edge.settings || null, edge.products, edge.categories || [], edge.menu || []);
+    applyShopData(edge.settings || null, edge.products, edge.categories || [], edge.menu || [], edge.bestSellers || []);
     return;
   }
   try {
@@ -784,7 +800,7 @@ async function initShop(){
     const p = await gs('getShopProducts');
     if (p.success){
       if (p.groupOrder) GROUP_ORDER_MAP = p.groupOrder;
-      applyShopData(s.success ? s.settings : null, p.products, p.categories || [], p.menu || []);
+      applyShopData(s.success ? s.settings : null, p.products, p.categories || [], p.menu || [], p.bestSellers || []);
     } else {
       toast(p.error || 'โหลดรายการสินค้าไม่สำเร็จ', false);
     }
@@ -822,8 +838,7 @@ function handleDeepLink(){
     const p = PRODUCTS.filter(function(x){ return x.id === pid; })[0];
     if (!p){ toast('ไม่พบรายการ '+pid+' ในร้าน (อาจปิดขายชั่วคราว)', false); return; }
     if (cart.indexOf(p.id) < 0){ cart.push(p.id); saveCartLocal(); }
-    openCat(p.category || CAT_LESSON);
-    if ((p.category||CAT_LESSON) === CAT_LESSON){ curGrade = p.grade; curCurri = p.curriculum || 'ทั้งหมด'; renderChips(); renderSubjects(); }
+    openProduct(p.id);
     renderCart();
     toast('ใส่ '+p.subject+' ลงตะกร้าแล้ว 🛒');
     document.getElementById('cartSection').scrollIntoView({ behavior:'smooth' });
@@ -859,7 +874,7 @@ function openCat(key){
   if (key !== CAT_LESSON){ curGrade = ''; curCurri = ''; curGroup = 'ทั้งหมด'; }
   const onShop = !document.getElementById('tab-shop').classList.contains('hidden');
   if (!onShop) switchTab('shop');
-  document.getElementById('globalSearch').value = '';
+  document.getElementById('globalSearch').value = ''; document.getElementById('searchWrap').classList.add('hidden'); document.getElementById('searchBtn').classList.remove('active');
   renderChips(); renderSubjects();
   try { updateCartBar(); } catch(e){}
   window.scrollTo({ top: document.getElementById('catalogBox').offsetTop - 8, behavior:'smooth' });
@@ -873,6 +888,13 @@ function goHome(){
   try { updateCartBar(); } catch(e){}
 }
 function setCat(c){ openCat(c); }
+function openLessonGrade(g){ openCat(CAT_LESSON); curGrade = g; curGroup = 'ทั้งหมด'; renderChips(); renderSubjects(); }
+function openProduct(id){
+  const p = PRODUCTS.filter(function(x){ return x.id === id; })[0]; if (!p) return;
+  const key = isOtherProduct(p) ? CAT_OTHER : (p.category || CAT_LESSON);
+  openCat(key);
+  if (key === CAT_LESSON){ curGrade = p.grade; curCurri = p.curriculum || 'ทั้งหมด'; renderChips(); renderSubjects(); }
+}
 function selectCatTab(c){ openCat(c); }
 function setGrade(g){ curGrade = g; curGroup = 'ทั้งหมด'; renderChips(); renderSubjects(); }
 function setCurri(c){ curCurri = c; curGroup = 'ทั้งหมด'; renderChips(); renderSubjects(); }
@@ -886,6 +908,15 @@ function onGlobalSearch(){
   renderChips(); renderSubjects();
 }
 function clearGlobalSearch(){ document.getElementById('globalSearch').value = ''; onGlobalSearch(); }
+function toggleSearch(force){
+  const w = document.getElementById('searchWrap');
+  const show = force === undefined ? w.classList.contains('hidden') : !!force;
+  if (show && document.getElementById('tab-shop').classList.contains('hidden')) switchTab('shop');
+  w.classList.toggle('hidden', !show);
+  document.getElementById('searchBtn').classList.toggle('active', show);
+  if (show) setTimeout(function(){ document.getElementById('globalSearch').focus(); }, 30);
+  else if (document.getElementById('globalSearch').value) clearGlobalSearch();
+}
 function menuAction(url){
   url = String(url||'').trim();
   if (!url) return;
@@ -911,14 +942,18 @@ function chipBtn(onclick, label, on, color){
 // แถบบน + ปุ่มเมนูจากชีต 🔘 + ชิปกรองของหน้าที่เปิดอยู่
 function renderChips(){
   const onShopTab = !document.getElementById('tab-shop').classList.contains('hidden');
-  // ปุ่มเมนู (ชีต 🔘 เมนู) — ไม่มีชีต/ว่าง → ปุ่มตรวจสถานะมาตรฐาน
-  const menuEl = document.getElementById('menuBtns');
-  const items = MENU.length ? MENU : [{ name:'ตรวจสอบสถานะ', icon:'🔍', url:'?status=1' }];
-  menuEl.innerHTML = items.map(function(m){
-    const isStatus = String(m.url||'').indexOf('?status') === 0;
-    return '<button data-tab="'+(isStatus?'status':'menu')+'" onclick="menuAction(\''+esc(m.url)+'\')" class="tab-btn text-xs sm:text-sm font-bold bg-white border border-sky-100 rounded-xl px-3 py-2 shadow-sm">'+esc(m.icon||'')+' '+esc(m.name)+'</button>';
+  // v11 ปุ่มหมวดบนแถบเมนู — จากชีต 📂 (ซ่อน = หาย) · 🧩 อื่นๆ โชว์เมื่อมีของที่ไม่เข้าหมวด
+  const hasOther = PRODUCTS.some(isOtherProduct);
+  document.getElementById('catTabs').innerHTML = CATEGORIES.filter(function(c){ return !c.other || hasOther; }).map(function(c){
+    const on = onShopTab && VIEW.page === 'cat' && VIEW.cat === c.key;
+    return '<button onclick="openCat(\''+esc(c.key)+'\')" class="tab-btn text-xs sm:text-sm font-bold bg-white border border-sky-100 rounded-xl px-3 py-2 shadow-sm whitespace-nowrap '+(on?'active':'')+'">'+c.icon+' '+esc(c.key)+'</button>';
   }).join('');
-  document.getElementById('homeTab').classList.toggle('active', onShopTab);
+  document.getElementById('homeTab').classList.toggle('active', onShopTab && VIEW.page === 'home');
+  document.getElementById('statusBtn').classList.toggle('ring-2', !document.getElementById('tab-status').classList.contains('hidden'));
+  // ลิงก์เสริมจากชีต 🔘 เมนู → ท้ายหน้า
+  document.getElementById('menuBtns').innerHTML = MENU.map(function(m){
+    return '<button onclick="menuAction(\''+esc(m.url)+'\')" class="text-xs font-bold text-sky-700 bg-white border border-sky-100 rounded-full px-3 py-1.5 shadow-sm">'+esc(m.icon||'')+' '+esc(m.name)+'</button>';
+  }).join('');
 
   const hint = document.getElementById('discountHint');
   const isLessonView = VIEW.page === 'cat' && VIEW.cat === CAT_LESSON;
@@ -929,7 +964,7 @@ function renderChips(){
   let html = '';
   if (VIEW.page === 'cat'){
     const cat = catOf(VIEW.cat) || { key:VIEW.cat, filters:[] };
-    const pool = PRODUCTS.filter(function(p){ return (p.category||CAT_LESSON) === cat.key; });
+    const pool = productsOfCat(cat.key);
     if (cat.key === CAT_LESSON){
       // แผนการสอน: ชั้น → หลักสูตร → กลุ่มวิชา (ลำดับเดิมที่ลูกค้าคุ้น)
       const grades = Array.from(new Set(pool.map(function(p){ return p.grade; }).filter(Boolean))).sort(gradeSort);
@@ -959,8 +994,8 @@ function renderChips(){
         } else curGroup = 'ทั้งหมด';
       }
     } else {
-      // หมวดอื่น: ชิปตามที่ตั้งในชีต 📂 (ค่าจากสินค้าจริง) — เลือกหรือไม่เลือกก็ดูรายการได้
-      (cat.filters || []).forEach(function(fk){
+      // หมวดอื่น: ชิปตามที่ตั้งในชีต 📂 (ค่าจากสินค้าจริง) — เลือกหรือไม่เลือกก็ดูรายการได้ · 🧩 อื่นๆ กรองด้วยชื่อหมวดเดิม
+      ((cat.other ? ['category'] : []).concat(cat.filters || [])).forEach(function(fk){
         let vals = Array.from(new Set(pool.map(function(p){ return String(p[fk]||'').trim(); }).filter(Boolean)));
         if (fk === 'grade') vals.sort(gradeSort); else vals.sort(function(a,b){ return a.localeCompare(b,'th'); });
         if (vals.length < 2 && !VIEW.f[fk]) return;
@@ -1030,24 +1065,26 @@ function renderSubjects(){
 
   if (VIEW.page === 'home'){
     grid.classList.add('hidden'); home.classList.remove('hidden');
-    head.innerHTML = '<div class="font-extrabold text-sky-800">เลือกหมวดที่ต้องการ</div>';
-    const counts = {};
-    PRODUCTS.forEach(function(p){ const k = p.category||CAT_LESSON; counts[k] = (counts[k]||0)+1; });
-    const tiles = CATEGORIES.filter(function(c){ return !c.system; }).map(function(c){
-      return '<button onclick="openCat(\''+esc(c.key)+'\')" class="text-left bg-white border-2 border-sky-100 rounded-2xl p-3.5 min-h-[104px] flex flex-col justify-between active:bg-sky-50">' +
-        '<span class="text-3xl leading-none">'+c.icon+'</span>' +
-        '<span><span class="block font-bold text-sm text-gray-800 mt-2">'+esc(c.key)+'</span><span class="block text-[11px] text-gray-500">'+(counts[c.key]||0)+' รายการ</span></span></button>';
+    // v11 หน้าแรก = 📚 เลือกชั้นแผนได้เลย + 🆕 มาใหม่ + 🔥 ขายดี
+    head.innerHTML = '<div class="font-extrabold text-sky-800">📚 แผนการสอน — เลือกชั้นได้เลย</div><div class="text-[11px] text-gray-500">หลักสูตร 2568 / 2551 พร้อมสื่อ HTML · เลือก 3 วิชาขึ้นไปลด '+(SETTINGS.discountPercent||5)+'%</div>';
+    const lessons = PRODUCTS.filter(function(p){ return (p.category||CAT_LESSON) === CAT_LESSON; });
+    const grades = Array.from(new Set(lessons.map(function(p){ return p.grade; }).filter(Boolean))).sort(gradeSort);
+    const gradeBtns = grades.map(function(g){
+      const n = lessons.filter(function(p){ return p.grade === g; }).length;
+      return '<button onclick="openLessonGrade(\''+esc(g)+'\')" class="bg-white border-2 border-sky-100 rounded-2xl py-3 px-2 text-center active:bg-sky-50"><div class="font-extrabold text-lg text-sky-700">'+esc(g)+'</div><div class="text-[11px] text-gray-500">'+n+' วิชา</div></button>';
     }).join('');
-    const sys = CATEGORIES.filter(function(c){ return c.system; })[0];
-    const sysTile = sys ? '<button onclick="openCat(\''+esc(sys.key)+'\')" class="col-span-full text-left bg-amber-50 border-2 border-amber-200 rounded-2xl p-3.5 flex items-center gap-3 active:bg-amber-100">' +
-      '<span class="text-3xl leading-none">'+sys.icon+'</span><span class="flex-1"><span class="block font-bold text-sm text-gray-800">'+esc(sys.key)+'</span><span class="block text-[11px] text-gray-500">'+(sys.desc ? esc(sys.desc) : 'สำหรับผู้บริหาร · '+(counts[sys.key]||0)+' รายการ')+'</span></span>' +
-      '<span class="text-[11px] font-bold text-white bg-sky-700 rounded-full px-3 py-1.5 whitespace-nowrap">ดูระบบ</span></button>' : '';
-    const news = PRODUCTS.filter(isNewProduct).slice(0, 12);
-    home.innerHTML = '<div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">'+tiles+sysTile+'</div>' +
-      (news.length ? '<div class="font-extrabold text-sky-800 mt-5 mb-2">🆕 มาใหม่</div><div class="flex gap-2.5 overflow-x-auto pb-2 -mx-1 px-1">' +
-        news.map(function(p){ return '<button onclick="openCat(\''+esc(p.category||CAT_LESSON)+'\')" class="flex-none w-48 text-left bg-white border-2 border-sky-100 rounded-2xl p-3">' +
+    const rail = function(title, list, badge){
+      if (!list.length) return '';
+      return '<div class="font-extrabold text-sky-800 mt-5 mb-2">'+title+'</div><div class="flex gap-2.5 overflow-x-auto pb-2 -mx-1 px-1">' +
+        list.map(function(p){ return '<button onclick="openProduct(\''+esc(p.id)+'\')" class="flex-none w-48 text-left bg-white border-2 border-sky-100 rounded-2xl p-3">' +
           '<span class="text-[11px] font-bold text-sky-700 bg-sky-50 rounded-full px-2 py-0.5">'+catIcon(p.category)+' '+esc(p.category||CAT_LESSON)+'</span>' +
-          '<div class="font-bold text-sm text-gray-800 mt-2 line-clamp-2">'+esc(p.subject)+'</div><div class="text-sm font-extrabold text-sky-600 mt-1">'+baht(p.price)+(p.unit==='ปี'?'/ปี':'')+'</div></button>'; }).join('') + '</div>' : '');
+          '<div class="font-bold text-sm text-gray-800 mt-2 line-clamp-2">'+esc(p.subject)+(p.grade?' <span class="text-gray-500 font-semibold">'+esc(p.grade)+'</span>':'')+'</div>' +
+          '<div class="flex items-center justify-between mt-1"><span class="text-sm font-extrabold text-sky-600">'+baht(p.price)+(p.unit==='ปี'?'/ปี':'')+'</span>'+(badge?'<span class="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-1.5 py-0.5">'+badge+'</span>':'')+'</div></button>'; }).join('') + '</div>';
+    };
+    const news = PRODUCTS.filter(isNewProduct).slice(0, 12);
+    const best = BEST.map(function(id){ return PRODUCTS.filter(function(p){ return p.id === id; })[0]; }).filter(Boolean).slice(0, 8);
+    home.innerHTML = (grades.length ? '<div class="grid grid-cols-4 sm:grid-cols-6 gap-2">'+gradeBtns+'</div>' : '<div class="text-xs text-gray-400 text-center py-4">ยังไม่มีแผนเปิดขาย</div>') +
+      rail('🔥 ขายดี', best, 'ขายดี') + rail('🆕 มาใหม่', news, 'ใหม่');
     return;
   }
 
@@ -1067,8 +1104,7 @@ function renderSubjects(){
       return;
     }
   }
-  const list = PRODUCTS.filter(function(p){
-    if ((p.category||CAT_LESSON) !== cat.key) return false;
+  const list = productsOfCat(cat.key).filter(function(p){
     if (isLesson){
       if (p.grade !== curGrade) return false;
       if (curCurri !== 'ทั้งหมด' && p.curriculum !== curCurri) return false;
@@ -1082,7 +1118,7 @@ function renderSubjects(){
     grid.innerHTML = '<div class="col-span-full text-center text-xs text-gray-400 py-8">ยังไม่มีรายการเปิดขายตามเงื่อนไขนี้ — ลองเปลี่ยนตัวกรองด้านบนค่ะ</div>';
     return;
   }
-  grid.innerHTML = list.map(function(p){ return productCard(p, false); }).join('');
+  grid.innerHTML = list.map(function(p){ return productCard(p, !!cat.other); }).join('');
 }
 function toggleCart(id){
   const i = cart.indexOf(id);
@@ -1880,7 +1916,6 @@ async function loadSettingsForm(){
   document.getElementById('stPct').value = m.discountPercent || 5;
   document.getElementById('stAnnounce').value = m.announcement || '';
   document.getElementById('stTxtDiscount').value = m.shopTextDiscount || '';
-  document.getElementById('stTxtVip').value = m.shopTextVip || '';
   document.getElementById('stTxtGmail1').value = m.shopTextGmail1 || '';
   document.getElementById('stTxtGmail2').value = m.shopTextGmail2 || '';
   document.getElementById('stTxtFooter').value = m.shopTextFooter || '';
@@ -1904,7 +1939,6 @@ async function saveSettingsForm(){
     discountPercent: document.getElementById('stPct').value,
     announcement: document.getElementById('stAnnounce').value.trim(),
     shopTextDiscount: document.getElementById('stTxtDiscount').value.trim(),
-    shopTextVip: document.getElementById('stTxtVip').value.trim(),
     shopTextGmail1: document.getElementById('stTxtGmail1').value.trim(),
     shopTextGmail2: document.getElementById('stTxtGmail2').value.trim(),
     shopTextFooter: document.getElementById('stTxtFooter').value.trim()

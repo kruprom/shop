@@ -5,6 +5,7 @@
      🛒 ครูพร้อมสอน — หน้าร้าน + แอดมิน v11.0 (5 ก.ย. 2569)
      v11: ปุ่มหมวดบนแถบเมนู (จากชีต 📂) · 🔍 ไอคอนค้นหาข้าง Admin · ตรวจสถานะมุมขวาบน · หน้าแรก = เลือกชั้นแผน + ขายดี + มาใหม่ · 🧩 อื่นๆ อัตโนมัติ · ไม่มี VIP
      v11.6: ปุ่ม 👀 ดูตัวอย่างทั้งหมวด (จาก categories[].example ใน products.json)
+     v12.1: Cloudflare — WEB_APP_URL ชี้ Worker · products.json อ่านจาก Worker/KV (สำรอง ./products.json → GAS)
      แอดมิน: แท็บ 📂 หมวดสินค้า (เพิ่ม/แก้/ซ่อน/เรียง/ลบ) · 📚 สินค้าทุกหมวด (ช่องเปลี่ยนตามหมวด, สวิตช์เปิดขาย)
              ⚙️ ปุ่มเมนูหน้าร้าน · บันทึกแล้วขึ้นหน้าร้านเอง · พนักงานเปิด/ปิดขายได้
      หน้าแรก = การ์ดหมวดจากชีต 📂 · ค้นหาทุกหมวด · ชิปกรองตามหมวด · ปุ่มเมนูจากชีต 🔘
@@ -13,7 +14,10 @@
      ⚙️ ตั้งค่า: วาง Web App URL ของ Google Apps Script ที่นี่ (ลงท้าย /exec)
 ════════════════════════════════════════════════════════════ -->
 <script>
-  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxv8kbUHqCgpWavQhcZq8y5Ff2r8IR7i4oy4sw5ouP2a_NxbloInxXAtn3hschY0DzL/exec';
+  // v12.1 Cloudflare: ชี้ไปที่ Worker (ซ่อน URL ของ GAS ไว้ใน Worker) — ถ้ายังไม่ได้ตั้ง Worker ใส่ URL /exec ของ GAS แทนได้
+  const WEB_APP_URL = 'https://kps-shop-api.kruprompt.workers.dev';
+  // ไฟล์สินค้า: ผ่าน Worker (KV) ก่อน → ไม่มี/พัง → ./products.json ข้างไฟล์นี้ → ไม่มี → เรียก GAS
+  const PRODUCTS_URL = /workers\.dev|\/api/.test(WEB_APP_URL) ? WEB_APP_URL.replace(/\/$/, '') + '/products.json' : './products.json';
 </script>
 <meta charset="UTF-8">
 <title>ครูพร้อมสอน</title>
@@ -787,10 +791,12 @@ function applyShopData(settings, products, categories, menu, best){
 }
 async function initShop(){
   let edge = null;
-  try {
-    const r = await fetch('./products.json', { cache: 'no-cache' });
-    if (r.ok) edge = await r.json();
-  } catch(e){}
+  for (const u of Array.from(new Set([PRODUCTS_URL, './products.json']))){
+    try {
+      const r = await fetch(u, { cache: 'no-cache' });
+      if (r.ok){ const j = await r.json(); if (j && j.products && j.products.length){ edge = j; break; } }
+    } catch(e){}
+  }
   if (edge && edge.products && edge.products.length){
     if (edge.groupOrder) GROUP_ORDER_MAP = edge.groupOrder;
     applyShopData(edge.settings || null, edge.products, edge.categories || [], edge.menu || [], edge.bestSellers || []);

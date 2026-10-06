@@ -1449,7 +1449,14 @@ function renderOrders(){
 }
 async function approveOrderUI(orderId){
   if (!confirm('อนุมัติออเดอร์ '+orderId+' และส่งลิงก์แผนไปยังอีเมลลูกค้าทันที?')) return;
-  const res = await gs('approveOrder', adminPin, orderId);
+  let res = await gs('approveOrder', adminPin, orderId);
+  // v12.2: แชร์ Drive ไม่สำเร็จ → ระบบยังไม่ส่งเมล ให้แอดมินเลือกว่าจะส่งต่อหรือหยุดไว้แก้สิทธิ์ก่อน
+  if (!res.success && res.needForce){
+    if (!confirm('⚠️ '+res.error+'\n\nส่งอีเมลต่อเลยไหม?\n(ลูกค้าจะได้ลิงก์ แต่เปิดไม่ได้จนกว่าจะแชร์สิทธิ์สำเร็จ)\n\nตกลง = ส่งต่อ · ยกเลิก = หยุดไว้ก่อน')){
+      toast('หยุดไว้ก่อน — ยังไม่ได้ส่งอีเมล', false); loadOrders(); return;
+    }
+    res = await gs('approveOrder', adminPin, orderId, true);
+  }
   if (res.success){ toast('ส่งแผนทางอีเมลเรียบร้อย 💌'); loadOrders(); }
   else toast(res.error, false);
 }

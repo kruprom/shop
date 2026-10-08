@@ -403,13 +403,13 @@
   </div>
   <!-- ฟอร์มเริ่มคุย (ครั้งแรก) -->
   <div id="chatForm" class="hidden flex-1 overflow-y-auto p-4 space-y-2.5">
-    <div class="text-xs text-gray-600">ฝากชื่อกับเบอร์โทรไว้ แล้วพิมพ์คำถามได้เลยค่ะ ไม่ต้องสมัครสมาชิก</div>
-    <input id="chatName" type="text" maxlength="60" autocomplete="name" placeholder="ชื่อ *" class="w-full border border-sky-200 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-sky-300">
-    <input id="chatPhone" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" placeholder="เบอร์โทร *" class="w-full border border-sky-200 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-sky-300">
-    <input id="chatEmail" type="email" inputmode="email" maxlength="120" autocomplete="email" placeholder="อีเมล (ไม่บังคับ — ถ้าปิดหน้านี้ไป เราส่งคำตอบให้ทางอีเมล)" class="w-full border border-sky-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300">
+    <div class="text-xs text-gray-600">ฝากชื่อ Facebook กับอีเมล Google ไว้ แล้วพิมพ์คำถามได้เลยค่ะ ไม่ต้องสมัครสมาชิก</div>
+    <input id="chatName" type="text" maxlength="60" autocomplete="nickname" placeholder="ชื่อ Facebook ที่ใช้ติดต่อเพจ *" class="w-full border border-sky-200 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-sky-300">
+    <input id="chatEmail" type="email" inputmode="email" maxlength="120" autocomplete="email" placeholder="อีเมล Gmail * (ถ้าปิดหน้านี้ไป เราส่งคำตอบให้ทางอีเมลนี้)" class="w-full border border-sky-200 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-sky-300">
+    <div id="chatEmailErr" class="hidden text-xs font-bold text-red-600 -mt-1.5"></div>
     <input id="chatHp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
     <textarea id="chatFirst" rows="3" maxlength="500" placeholder="พิมพ์ข้อความ *" class="w-full border border-sky-200 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-sky-300"></textarea>
-    <label class="flex items-start gap-2 text-[11px] text-gray-600"><input id="chatConsent" type="checkbox" class="mt-0.5"><span>ยินยอมให้ร้านเก็บชื่อ เบอร์โทร อีเมล และข้อความ เพื่อใช้ตอบคำถามเท่านั้น (เก็บไม่เกิน 90 วันแล้วลบอัตโนมัติ)</span></label>
+    <label class="flex items-start gap-2 text-[11px] text-gray-600"><input id="chatConsent" type="checkbox" class="mt-0.5"><span>ยินยอมให้ร้านเก็บชื่อ Facebook อีเมล และข้อความ เพื่อใช้ตอบคำถามเท่านั้น (เก็บไม่เกิน 90 วันแล้วลบอัตโนมัติ)</span></label>
     <div id="chatTs" class="hidden"></div>
     <div id="chatErr" class="hidden text-xs font-bold text-red-600"></div>
     <button id="chatFormBtn" onclick="sendChat()" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-extrabold rounded-xl py-2.5 text-sm shadow disabled:opacity-50">ส่งข้อความ</button>
@@ -1153,6 +1153,7 @@ function chatTsInit(){
     document.head.appendChild(sc);
   }
 }
+function emailErr(m){ const e = document.getElementById('chatEmailErr'); if (!e) return; e.textContent = m || ''; e.classList.toggle('hidden', !m); const i = document.getElementById('chatEmail'); if (i) i.classList.toggle('border-red-400', !!m); }
 function chatTsReset(){ try { if (window.turnstile && CHAT.tsId !== null) window.turnstile.reset(CHAT.tsId); } catch(e){} CHAT.ts = ''; }
 async function sendChat(){
   if (CHAT.busy) return;
@@ -1162,12 +1163,14 @@ async function sendChat(){
   const body = { token: CHAT.token, text: text };
   if (!hasThread){
     const name = document.getElementById('chatName').value.trim();
-    const phone = document.getElementById('chatPhone').value.trim();
-    if (!name){ chatErr('กรุณากรอกชื่อ'); return; }
-    if (!/^\+?\d{8,15}$/.test(phone.replace(/[\s\-().]/g, ''))){ chatErr('เบอร์โทรไม่ถูกต้อง (ตัวเลข 8–15 หลัก)'); return; }
+    const email = document.getElementById('chatEmail').value.trim().toLowerCase();
+    emailErr('');
+    if (!name){ chatErr('กรุณากรอกชื่อ Facebook'); return; }
+    if (!email){ emailErr('กรุณากรอกอีเมล Gmail ค่ะ'); document.getElementById('chatEmail').focus(); return; }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ emailErr('รูปแบบอีเมลไม่ถูกต้อง'); document.getElementById('chatEmail').focus(); return; }
     if (!document.getElementById('chatConsent').checked){ chatErr('กรุณาติ๊กยินยอมการเก็บข้อมูลก่อนนะคะ'); return; }
     if (SETTINGS.turnstileSiteKey && !CHAT.ts){ chatErr('รอช่องยืนยันตัวตนด้านบนให้เสร็จก่อนนะคะ'); return; }
-    Object.assign(body, { name:name, phone:phone, email:document.getElementById('chatEmail').value.trim(), consent:true, hp:document.getElementById('chatHp').value, ts:CHAT.ts });
+    Object.assign(body, { name:name, email:email, consent:true, hp:document.getElementById('chatHp').value, ts:CHAT.ts });
   }
   CHAT.busy = true; chatErr('');
   ['chatFormBtn','chatSendBtn'].forEach(function(id){ const b = document.getElementById(id); if (b) b.disabled = true; });
@@ -1176,7 +1179,8 @@ async function sendChat(){
   ['chatFormBtn','chatSendBtn'].forEach(function(id){ const b = document.getElementById(id); if (b) b.disabled = false; });
   if (!r.ok || (!hasThread && !r.token)){
     if (r.gone){ chatForget(); chatShowView(); }
-    chatErr(r.error || 'ส่งไม่สำเร็จ ลองใหม่อีกครั้งนะคะ');
+    if (r.field === 'email' && !hasThread){ chatErr(''); emailErr(r.error); document.getElementById('chatEmail').focus(); }
+    else chatErr(r.error || 'ส่งไม่สำเร็จ ลองใหม่อีกครั้งนะคะ');
     if (!hasThread) chatTsReset();
     return;
   }

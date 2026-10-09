@@ -19,7 +19,7 @@
 ════════════════════════════════════════════════════════════ -->
 <script>
   // v12.1 Cloudflare: ชี้ไปที่ Worker (ซ่อน URL ของ GAS ไว้ใน Worker) — ถ้ายังไม่ได้ตั้ง Worker ใส่ URL /exec ของ GAS แทนได้
-  const WEB_APP_URL = 'https://kps-shop-api.kruprompt.workers.dev';
+  const WEB_APP_URL = 'https://kps-shop-api.kruprompt.workers.dev/';
   // ไฟล์สินค้า: ผ่าน Worker (KV) ก่อน → ไม่มี/พัง → ./products.json ข้างไฟล์นี้ → ไม่มี → เรียก GAS
   const PRODUCTS_URL = /workers\.dev|\/api/.test(WEB_APP_URL) ? WEB_APP_URL.replace(/\/$/, '') + '/products.json' : './products.json';
 </script>

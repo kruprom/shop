@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ตัวอย่างสื่อ ครูพร้อมสอน</title>
-  <!-- v10.2: รองรับ ?id=รหัสสินค้า (ทุกหมวด) · v11.6: ?cat=ชื่อหมวด = ตัวอย่างรวมทั้งหมวด (แท็บตามโฟลเดอร์ย่อย) -->
+  <!-- v12.10: รองรับไฟล์ทุกชนิดจาก Ex_ (embed/kind: docx pptx xlsx Google รูป) · v10.2: รองรับ ?id=รหัสสินค้า (ทุกหมวด) · v11.6: ?cat=ชื่อหมวด = ตัวอย่างรวมทั้งหมวด (แท็บตามโฟลเดอร์ย่อย) -->
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -90,6 +90,8 @@
 
   <script>
     function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+    var KIND_ICON={pdf:'📄',image:'🖼️',docx:'📝',gdoc:'📝',pptx:'📊',gslides:'📊',xlsx:'📈',gsheet:'📈',file:'📎'};
+    function ico(p){ return KIND_ICON[p.kind]||'📄'; }
     function $(id){ return document.getElementById(id); }
 
     var GROUPS = null, FULL = null;
@@ -169,13 +171,13 @@
             var viewUrl = 'https://drive.google.com/file/d/' + p.id + '/view';
             return '<a href="'+viewUrl+'" target="_blank" rel="noopener" '+
               'class="flex items-center justify-between bg-white rounded-xl shadow-sm hover:shadow-md transition p-4 border border-sky-100">'+
-              '<span class="font-medium text-slate-700 truncate">📄 '+esc(p.name||('ตัวอย่าง '+(i+1)))+'</span>'+
+              '<span class="font-medium text-slate-700 truncate">'+ico(p)+' '+esc(p.name||('ตัวอย่าง '+(i+1)))+'</span>'+
               '<span class="text-xs bg-sky-600 text-white rounded-lg px-3 py-1 flex-shrink-0">เปิดดู</span></a>';
           }).join('');
         } else {
           var frame = $('pdfFrame');
           window.showPdf = function(i){
-            frame.src = 'https://drive.google.com/file/d/' + DATA.pdfs[i].id + '/preview';
+            frame.src = DATA.pdfs[i].embed || ('https://drive.google.com/file/d/' + DATA.pdfs[i].id + '/preview');
             Array.prototype.forEach.call(document.querySelectorAll('[data-pdf]'), function(b){
               var on = (+b.dataset.pdf === i);
               b.className = 'text-sm rounded-lg px-3 py-1.5 transition ' + (on
@@ -184,7 +186,7 @@
             });
           };
           $('pdfTabs').innerHTML = DATA.pdfs.map(function(p,i){
-            return '<button data-pdf="'+i+'" onclick="showPdf('+i+')">📄 '+esc(p.name||('ตัวอย่าง '+(i+1)))+'</button>';
+            return '<button data-pdf="'+i+'" onclick="showPdf('+i+')">'+ico(p)+' '+esc(p.name||('ตัวอย่าง '+(i+1)))+'</button>';
           }).join('');
           window.showPdf(0);
         }

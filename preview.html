@@ -6,7 +6,15 @@
   <title>ตัวอย่างสื่อ ครูพร้อมสอน</title>
   <!-- v12.10: รองรับไฟล์ทุกชนิดจาก Ex_ (embed/kind: docx pptx xlsx Google รูป) · v10.2: รองรับ ?id=รหัสสินค้า (ทุกหมวด) · v11.6: ?cat=ชื่อหมวด = ตัวอย่างรวมทั้งหมวด (แท็บตามโฟลเดอร์ย่อย) -->
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="theme-color" content="#1d4ed8">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ครูพร้อมสอน KruPromSorn">
+  <meta property="og:title" content="ตัวอย่างสื่อ — ครูพร้อมสอน">
+  <meta property="og:description" content="ดูตัวอย่างแผนการสอนและสื่อก่อนสั่งซื้อ — ครูพร้อมสอน เพื่อนครู คู่การสอน">
+  <meta property="og:image" content="https://kps-shop.pages.dev/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -25,9 +33,10 @@
   <script>var WEB_APP_URL = 'https://kps-shop-api.kruprompt.workers.dev';</script>
 
   <!-- Header -->
-  <header class="bg-gradient-to-r from-sky-600 to-blue-500 text-white">
-    <div class="max-w-5xl mx-auto px-4 py-6 text-center">
-      <div class="text-2xl">🛍️</div>
+  <header class="bg-gradient-to-r from-blue-800 to-sky-500 text-white">
+    <div class="max-w-5xl mx-auto px-4 py-6 text-center relative">
+      <a id="backShop" href="./" class="absolute left-3 top-3 text-xs font-bold bg-white/15 hover:bg-white/25 border border-white/40 rounded-full px-3 py-1.5">← กลับร้าน</a>
+      <img src="icon-192.png" alt="ครูพร้อมสอน" class="w-14 h-14 mx-auto rounded-full shadow">
       <h1 id="title" class="text-xl sm:text-2xl font-bold mt-1">ตัวอย่างสื่อ</h1>
       <p id="subtitle" class="text-sky-100 text-sm mt-1"></p>
     </div>

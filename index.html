@@ -26,8 +26,19 @@
 </script>
 <title>ครูพร้อมสอน</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="theme-color" content="#38bdf8">
+<meta name="theme-color" content="#1d4ed8">
+<meta name="description" content="แผนการสอน สื่อ HTML ข้อสอบ ป.1–ม.6 หลักสูตร 2568 / 2551 พร้อมใช้ ส่งไวทาง Gmail — ครูพร้อมสอน เพื่อนครู คู่การสอน">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ครูพร้อมสอน KruPromSorn">
+<meta property="og:title" content="ครูพร้อมสอน — เพื่อนครู คู่การสอน">
+<meta property="og:description" content="แผนการสอน สื่อ HTML ข้อสอบ ป.1–ม.6 พร้อมใช้ ส่งไวทาง Gmail">
+<meta property="og:image" content="https://kps-shop.pages.dev/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="th_TH">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="ครูพร้อมสอน">
@@ -38,7 +49,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   * { font-family: 'Sarabun', sans-serif; }
-  .brand-grad { background: linear-gradient(135deg,#0ea5e9,#38bdf8,#7dd3fc); }
+  .brand-grad { background: linear-gradient(135deg,#1e40af,#2563eb,#38bdf8); }   /* v12.11: น้ำเงินตามโลโก้ */
   .dot-online { width:8px; height:8px; border-radius:50%; background:#22c55e; animation: blink 1.4s infinite; }
   @keyframes blink { 0%,100%{opacity:1; box-shadow:0 0 0 0 rgba(34,197,94,.5);} 50%{opacity:.35; box-shadow:0 0 0 5px rgba(34,197,94,0);} }
   .tab-btn { white-space:nowrap; }
@@ -55,6 +66,7 @@
 
 <!-- ░░ Loading Overlay ░░ -->
 <div id="loading" class="hidden fixed inset-0 bg-white/70 backdrop-blur-sm z-[100] flex flex-col items-center justify-center gap-3">
+  <img src="icon-192.png" alt="" style="width:64px;height:64px;border-radius:50%" class="shadow">
   <div class="spinner"></div>
   <div id="loadingText" class="text-sm font-semibold text-sky-700">กำลังเชื่อมต่อ Google Sheets…</div>
 </div>
@@ -69,9 +81,10 @@
     <!-- 🔍 v11 ตรวจสถานะออเดอร์ — มุมขวาบน -->
     <button id="statusBtn" onclick="switchTab('status')" class="no-print absolute top-3 right-3 text-[11px] sm:text-xs font-bold bg-white/15 hover:bg-white/25 border border-white/40 rounded-full px-3 py-1.5">🔍 ตรวจสถานะ</button>
     <!-- โลโก้ร้านจากแท็บตั้งค่า (อัปโหลดได้เอง) — ยังไม่อัปโหลดจะแสดง 🛒 ไปก่อน -->
-    <img id="hdrLogo" class="hidden w-16 h-16 object-contain rounded-2xl bg-white/90 p-1 mx-auto shadow" alt="โลโก้ร้าน">
-    <div id="hdrLogoFallback" class="text-3xl">🛒</div>
-    <h1 class="text-xl sm:text-2xl font-extrabold mt-1"><span id="hdrPageName">ครูพร้อมสอน</span></h1>
+    <!-- v12.11: โลโก้ครูพร้อมสอน (ไฟล์ logo-kps.png ในโฟลเดอร์เดียวกัน) — ชื่อร้านอยู่ในโลโก้แล้ว จึงซ่อน h1 ไว้ให้โปรแกรมอ่านหน้าจอ/SEO -->
+    <img id="hdrLogo" src="logo-kps.png" class="object-contain mx-auto shadow-lg" style="width:min(210px,62%);height:auto;background:rgba(255,255,255,.93);border-radius:26px;padding:8px" alt="ครูพร้อมสอน KruPromSorn" onerror="this.classList.add('hidden');document.getElementById('hdrLogoFallback').classList.remove('hidden')">
+    <div id="hdrLogoFallback" class="hidden text-3xl">🛒</div>
+    <h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap"><span id="hdrPageName">ครูพร้อมสอน</span></h1>
     <p id="hdrSlogan" class="text-xs sm:text-sm opacity-90 mt-1">แผน · สื่อ · ข้อสอบ · เอกสารครู พร้อมใช้ ส่งไวทาง Gmail</p>
   </header>
 
@@ -826,13 +839,7 @@ function applyShopData(settings, products, categories, menu, best, posts){
     document.getElementById('hdrPageName').textContent = SETTINGS.pageName || 'ครูพร้อมสอน';
     document.title = SETTINGS.pageName || 'ครูพร้อมสอน';
     if (SETTINGS.slogan) document.getElementById('hdrSlogan').textContent = SETTINGS.slogan;
-    if (SETTINGS.logoURL){
-      const lg = document.getElementById('hdrLogo');
-      lg.src = SETTINGS.logoURL;
-      lg.classList.remove('hidden');
-      document.getElementById('hdrLogoFallback').classList.add('hidden');
-      try { const ic = document.querySelector('link[rel="apple-touch-icon"]'); if (ic) ic.href = SETTINGS.logoURL; } catch(e){}
-    }
+    // v12.11: หัวเว็บใช้ logo-kps.png และไอคอนแอปใช้ apple-touch-icon.png (ไม่ใช้ logoURL ในชีตแล้ว)
     document.getElementById('ruleMin').textContent = SETTINGS.discountMinItems;
     document.getElementById('rulePct').textContent = SETTINGS.discountPercent;
     if (SETTINGS.announcement){
@@ -1018,7 +1025,7 @@ function renderNews(){
   const all = sortedNews();
   if (dot) dot.classList.toggle('hidden', !all.some(isNewPost));
   if (!all.length){
-    list.innerHTML = '<div class="text-center py-10"><div class="text-3xl mb-2">📭</div><div class="text-sm font-bold text-sky-700">ยังไม่มีข่าวในตอนนี้</div><div class="text-xs text-gray-400 mt-1">แวะมาใหม่นะคะ</div></div>';
+    list.innerHTML = '<div class="text-center py-10"><img src="icon-192.png" alt="" style="width:56px;height:56px;border-radius:50%" class="mx-auto mb-2"><div class="text-sm font-bold text-sky-700">ยังไม่มีข่าวในตอนนี้</div><div class="text-xs text-gray-400 mt-1">แวะมาใหม่นะคะ</div></div>';
     more.innerHTML = ''; return;
   }
   list.innerHTML = all.slice(0, NEWS_SHOWN).map(postCard).join('');
@@ -1360,9 +1367,9 @@ function productMeta(p){
   const m = [];
   if ((p.category||CAT_LESSON) === CAT_LESSON){
     if (p.grade) m.push(esc(p.grade));
-    if (p.curriculum && !ONE_CURRI) m.push('หลักสูตร '+esc(p.curriculum));
-    if (p.hours) m.push(p.hours+' ชม.');
-    return m.join(' • ');
+    if (p.curriculum && !ONE_CURRI) m.push('<span class="font-bold rounded-full px-1.5 py-0.5 border '+(String(p.curriculum)==='51'?'text-amber-700 bg-amber-50 border-amber-200':'text-emerald-700 bg-emerald-50 border-emerald-200')+'">หลักสูตร '+esc(p.curriculum)+'</span>');
+    if (p.hours) m.push('<span class="font-bold text-gray-700">'+p.hours+' ชม.</span>');
+    return m.join(' ');
   }
   if (p.grade) m.push(esc(p.grade));
   if (p.subj) m.push(esc(p.subj));
@@ -1385,7 +1392,7 @@ function productCard(p, showCat){
     '<div class="flex items-center justify-between mt-1">' +
       '<span class="text-sm font-extrabold text-sky-600">'+baht(p.price)+(p.unit==='ปี'?' <span class="text-[11px] font-semibold text-gray-500">/ ปี</span>':'')+'</span>' +
       '<div class="flex gap-1.5">' +
-        (p.exampleLink ? '<a href="'+esc(p.exampleLink)+'" target="_blank" rel="noopener" class="text-[11px] font-bold text-teal-600 bg-teal-50 border border-teal-200 rounded-lg px-2 py-1">👀 ตัวอย่าง</a>' : '') +
+        (p.exampleLink ? '<a href="'+esc(p.exampleLink)+'" target="_blank" rel="noopener" class="text-[11px] font-bold text-teal-600 bg-teal-50 border border-teal-200 rounded-lg px-2 py-1">👀 ตัวอย่าง</a>' : ((p.category||CAT_LESSON)===CAT_LESSON ? '<span class="text-[10px] text-gray-400 self-center">ยังไม่มีตัวอย่าง</span>' : '')) +
         '<button onclick="toggleCart(\''+jq(p.id)+'\')" class="text-[11px] font-bold rounded-lg px-2.5 py-1 '+(inCart?'bg-red-100 text-red-600':'bg-sky-600 text-white')+'">'+(inCart?'นำออก':'➕ ใส่ตะกร้า')+'</button>' +
       '</div>' +
     '</div></div>';
@@ -1407,7 +1414,7 @@ function renderSubjects(){
     head.innerHTML = '<div class="flex items-center gap-2"><button onclick="clearGlobalSearch()" class="w-9 h-9 rounded-full bg-white border border-sky-200 text-sky-700 font-bold">‹</button>' +
       '<div><div class="font-extrabold text-sky-800">ผลการค้นหา "'+esc(document.getElementById('globalSearch').value.trim())+'"</div><div class="text-[11px] text-gray-500">'+hits.length+' รายการ จากทุกหมวด</div></div></div>';
     grid.innerHTML = hits.length ? hits.map(function(p){ return productCard(p, true); }).join('')
-      : '<div class="col-span-full text-center py-10"><div class="text-3xl mb-2">🤔</div><div class="text-sm font-bold text-sky-700">ไม่พบรายการ</div><div class="text-xs text-gray-400 mt-1">ลองพิมพ์สั้นลง เช่น ชื่อวิชา หรือชั้น</div></div>';
+      : '<div class="col-span-full text-center py-10"><img src="icon-192.png" alt="" style="width:56px;height:56px;border-radius:50%" class="mx-auto mb-2"><div class="text-sm font-bold text-sky-700">ไม่พบรายการ</div><div class="text-xs text-gray-400 mt-1">ลองพิมพ์สั้นลง เช่น ชื่อวิชา หรือชั้น</div></div>';
     return;
   }
 

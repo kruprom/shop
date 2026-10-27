@@ -47,18 +47,12 @@
     };
   }
   window.addEventListener('beforeinstallprompt', function (e) {
-    e.preventDefault(); window.__kpsInstall = e;
-    window.addEventListener('load', function () { setTimeout(function () { showInstall(e); }, 2500); });
-    if (document.readyState === 'complete') setTimeout(function () { showInstall(e); }, 2500);
+    e.preventDefault(); window.__kpsInstall = e;   // เก็บไว้ใช้เมื่อกดปุ่ม 📲 เอง (ไม่เด้งอัตโนมัติ)
   });
   window.kpsInstallApp = function () {            // เรียกจากปุ่มในเมนูได้
     try { localStorage.removeItem('kps_inst_dismiss'); } catch (e) {}
     dismissed = false; showInstall(window.__kpsInstall || null);
   };
-  if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !standalone) {
-    window.addEventListener('load', function () { setTimeout(function () { showInstall(null); }, 3500); });
-  }
-
   /* ── service worker + D: แจ้งเวอร์ชันใหม่ ── */
   if ('serviceWorker' in navigator) {
     var hadCtl = !!navigator.serviceWorker.controller;

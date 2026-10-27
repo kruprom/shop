@@ -5,16 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ตัวอย่างสื่อ ครูพร้อมสอน</title>
   <!-- v12.10: รองรับไฟล์ทุกชนิดจาก Ex_ (embed/kind: docx pptx xlsx Google รูป) · v10.2: รองรับ ?id=รหัสสินค้า (ทุกหมวด) · v11.6: ?cat=ชื่อหมวด = ตัวอย่างรวมทั้งหมวด (แท็บตามโฟลเดอร์ย่อย) -->
-  <link rel="icon" type="image/x-icon" href="favicon.ico?v=3">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=3">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
-  <meta name="theme-color" content="#1d4ed8">
+  <link rel="icon" type="image/x-icon" href="favicon.ico?v=4">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=4">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=4">
+<link rel="manifest" href="manifest.json">
+<script src="pwa.js"></script>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="KruPromSorn">
+  <meta name="theme-color" content="#f5b82e">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="ครูพร้อมสอน KruPromSorn">
   <meta property="og:title" content="ตัวอย่างสื่อ — ครูพร้อมสอน">
   <meta property="og:description" content="ดูตัวอย่างแผนการสอนและสื่อก่อนสั่งซื้อ — ครูพร้อมสอน เพื่อนครู คู่การสอน">
   <meta property="og:image" content="https://kps-shop.pages.dev/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
+  <script>tailwind={config:{theme:{extend:{colors:{sky:{50:"#fffbeb",100:"#fef3c7",200:"#fde68a",300:"#fcd34d",400:"#fbbf24",500:"#f5b82e",600:"#c27c0a",700:"#9a5b08",800:"#7c4a08",900:"#5a3606"},blue:{50:"#fffbeb",800:"#7c4a08"}}}}}}</script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -22,7 +28,7 @@
     .pdf-frame { width: 100%; height: 78vh; border: 0; border-radius: 0.75rem; background:#f8fafc; }
     @media (max-width: 640px){ .pdf-frame { height: 70vh; } }
     .noselect { -webkit-user-select:none; user-select:none; }
-    .spin { width:42px; height:42px; border:5px solid #bae6fd; border-top-color:#0284c7; border-radius:50%; animation:sp .8s linear infinite; }
+    .spin { width:42px; height:42px; border:5px solid #fde68a; border-top-color:#c27c0a; border-radius:50%; animation:sp .8s linear infinite; }
     @keyframes sp { to { transform:rotate(360deg); } }
   </style>
 </head>
@@ -33,10 +39,10 @@
   <script>var WEB_APP_URL = 'https://kps-shop-api.kruprompt.workers.dev';</script>
 
   <!-- Header -->
-  <header class="bg-gradient-to-r from-blue-800 to-sky-500 text-white">
+  <header class="text-white" style="background:linear-gradient(135deg,#c27c0a,#f5b82e)">
     <div class="max-w-5xl mx-auto px-4 py-6 text-center relative">
       <a id="backShop" href="./" class="absolute left-3 top-3 text-xs font-bold bg-white/15 hover:bg-white/25 border border-white/40 rounded-full px-3 py-1.5">← กลับร้าน</a>
-      <img src="icon-192.png?v=3" alt="ครูพร้อมสอน" class="w-14 h-14 mx-auto rounded-xl shadow">
+      <img src="icon-192.png?v=4" alt="ครูพร้อมสอน" class="w-14 h-14 mx-auto rounded-xl shadow">
       <h1 id="title" class="text-xl sm:text-2xl font-bold mt-1">ตัวอย่างสื่อ</h1>
       <p id="subtitle" class="text-sky-100 text-sm mt-1"></p>
     </div>
@@ -91,7 +97,7 @@
   </footer>
 
   <!-- ปุ่มลอย: กลับไปหน้าร้านพร้อมใส่วิชานี้ลงตะกร้าให้เลย -->
-  <div id="buyBar" class="hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-t border-sky-100 shadow-[0_-4px_16px_rgba(2,132,199,.12)] px-4 py-2.5">
+  <div id="buyBar" class="hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-t border-sky-100 shadow-[0_-4px_16px_rgba(194,124,10,.12)] px-4 py-2.5">
     <a id="buyLink" href="./" class="flex items-center justify-center gap-2 w-full bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl py-2.5 text-sm">
       🛒 <span id="buyLabel">สั่งซื้อวิชานี้</span>
     </a>
@@ -216,7 +222,7 @@
     // เปิดสื่อ HTML เป็นแท็บใหม่ — เปิดแท็บทันที (กัน popup block) แล้วค่อยเติมเนื้อหาที่ดึงมา
     function openMedia(id){
       var w = window.open('', '_blank');
-      if (w) { try { w.document.write('<!doctype html><meta charset="utf-8"><title>กำลังโหลดสื่อ…</title><body style="font-family:sans-serif;text-align:center;color:#0284c7;margin-top:60px">⏳ กำลังโหลดสื่อ…</body>'); } catch(e){} }
+      if (w) { try { w.document.write('<!doctype html><meta charset="utf-8"><title>กำลังโหลดสื่อ…</title><body style="font-family:sans-serif;text-align:center;color:#c27c0a;margin-top:60px">⏳ กำลังโหลดสื่อ…</body>'); } catch(e){} }
       fetch(WEB_APP_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },

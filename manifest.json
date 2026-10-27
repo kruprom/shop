@@ -1,0 +1,27 @@
+{
+  "name": "ครูพร้อมสอน",
+  "short_name": "KruPromSorn",
+  "description": "ร้านแผนการสอน สื่อ HTML และระบบจัดการออเดอร์ของครูพร้อมสอน",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eff6ff",
+  "theme_color": "#1d4ed8",
+  "lang": "th",
+  "dir": "ltr",
+  "categories": ["business", "education", "productivity"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Admin: ออเดอร์", "short_name": "ออเดอร์", "description": "จัดการออเดอร์", "url": "/admin/", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Admin: ออเดอร์รอชำระ", "short_name": "รอชำระ", "url": "/admin/?tab=orders&filter=%E0%B8%A3%E0%B8%AD%E0%B8%8A%E0%B8%B3%E0%B8%A3%E0%B8%B0", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Admin: ชำระแล้ว รอส่งแผน", "short_name": "รอส่ง", "url": "/admin/?tab=orders&filter=%E0%B8%8A%E0%B8%B3%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%87%E0%B8%B4%E0%B8%99%E0%B9%81%E0%B8%A5%E0%B9%89%E0%B8%A7", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Admin: ลูกค้า", "short_name": "ลูกค้า", "url": "/admin/?tab=customers", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
+  ]
+}

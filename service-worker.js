@@ -5,7 +5,7 @@
  * - ไอคอน/ฟอนต์/CSS/JS ในโดเมนเดียวกัน: Cache-first
  * - Worker / Apps Script / ข้อมูลสินค้า-ออเดอร์: ไม่แตะแคชเลย (ข้อมูลสดเสมอ)
  */
-const CACHE_VERSION = 'kps-app-v12.13';
+const CACHE_VERSION = 'kps-app-v12.14';
 const SHELL = CACHE_VERSION + '-shell';
 const RUNTIME = CACHE_VERSION + '-runtime';
 const PRECACHE = ['./', './admin/', './manifest.json', './pwa.js', './logo-kps.png', './icon-192.png', './icon-512.png'];
